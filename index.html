@@ -1,23 +1,20 @@
-
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>สุ่มสัตว์สุดน่ารัก 🐾</title>
+  <meta name="theme-color" content="#f5f5ff">
+  <meta name="description" content="Discover cute random animals and enjoy an animal rain!">
+  <title>Animal Randomizer 🐾</title>
 
   <style>
-    /* ===== 1. ตั้งค่าพื้นฐาน ===== */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
       min-height: 100dvh;
-      padding: 30px 16px;
+      padding: 24px 14px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -27,32 +24,48 @@
       overflow-x: hidden;
     }
 
-    /* ===== 2. กล่องหลัก ===== */
     .container {
       width: 100%;
       max-width: 500px;
-      padding: 30px 20px;
-      background: rgba(255, 255, 255, 0.9);
+      padding: 25px 20px;
+      background: rgba(255, 255, 255, .94);
       border: 2px solid white;
       border-radius: 28px;
-      box-shadow: 0 12px 35px rgba(108, 92, 231, 0.15);
+      box-shadow: 0 12px 35px rgba(108, 92, 231, .15);
       position: relative;
       z-index: 1;
+    }
+
+    .language-row {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    #languageSelect {
+      max-width: 180px;
+      padding: 10px;
+      border: 1px solid #ded9ff;
+      border-radius: 12px;
+      background: white;
+      color: #5144b8;
+      font-size: 15px;
+      cursor: pointer;
     }
 
     h1 {
       color: #6c5ce7;
       font-size: clamp(25px, 6vw, 36px);
-      margin-top: 0;
-      margin-bottom: 12px;
+      margin: 0 0 12px;
+      overflow-wrap: anywhere;
     }
 
-    .subtitle {
-      color: #888;
-      font-size: 16px;
-    }
+    .subtitle { color: #888; font-size: 16px; }
 
-    /* ===== 3. พื้นที่แสดงสัตว์ ===== */
     #animalDisplay {
       min-height: 160px;
       display: flex;
@@ -62,41 +75,23 @@
       font-size: clamp(90px, 25vw, 130px);
     }
 
-    .animal-pop {
-      animation: pop 0.65s ease;
-    }
+    .animal-pop { animation: pop .65s ease; }
 
     @keyframes pop {
-      0% {
-        transform: scale(0.2) rotate(-20deg);
-        opacity: 0;
-      }
-
-      60% {
-        transform: scale(1.2) rotate(10deg);
-        opacity: 1;
-      }
-
-      100% {
-        transform: scale(1) rotate(0);
-        opacity: 1;
-      }
+      0% { transform: scale(.2) rotate(-20deg); opacity: 0; }
+      60% { transform: scale(1.2) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
     }
 
     #message {
       min-height: 30px;
       color: #6c5ce7;
-      font-size: 20px;
+      font-size: 18px;
       font-weight: bold;
       overflow-wrap: anywhere;
     }
 
-    /* ===== 4. ตัวนับ ===== */
-    #counter {
-      color: #777;
-      font-size: 16px;
-      margin: 18px 0 10px;
-    }
+    #counter { color: #777; font-size: 16px; margin: 18px 0 10px; }
 
     .progress-track {
       height: 12px;
@@ -112,21 +107,19 @@
       width: 0%;
       background: linear-gradient(90deg, #a29bfe, #fd79a8);
       border-radius: 20px;
-      transition: width 0.2s ease;
+      transition: width .2s ease;
     }
 
-    /* ===== 5. ปุ่ม ===== */
     button {
       border: none;
       border-radius: 15px;
-      padding: 15px 24px;
+      padding: 15px 18px;
       min-height: 50px;
       font-size: 18px;
       font-weight: bold;
       cursor: pointer;
       touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform 0.15s, background 0.15s;
+      transition: transform .15s, background .15s;
     }
 
     #animalButton {
@@ -136,16 +129,18 @@
       box-shadow: 0 5px 0 #4834d4;
     }
 
-    #animalButton:hover {
-      background: #8174f1;
-    }
+    #animalButton:hover:not(:disabled) { background: #8174f1; }
 
-    #animalButton:active {
+    #animalButton:active:not(:disabled) {
       transform: translateY(3px);
       box-shadow: 0 2px 0 #4834d4;
     }
 
-    /* ===== 6. ฝนสัตว์ ===== */
+    #animalButton:disabled {
+      opacity: .7;
+      cursor: wait;
+    }
+
     .rain-animal {
       position: fixed;
       top: -70px;
@@ -157,115 +152,215 @@
     }
 
     @keyframes animalRain {
-      0% {
-        transform: translateY(-70px) rotate(0deg);
-        opacity: 1;
-      }
-
-      100% {
-        transform: translateY(115vh) rotate(720deg);
-        opacity: 0.8;
-      }
+      0% { transform: translateY(-70px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(115vh) rotate(720deg); opacity: .8; }
     }
 
-    /* ===== 7. เอฟเฟกต์เมื่อครบ 100 ครั้ง ===== */
-    .celebration {
-      animation: celebrate 0.5s ease-in-out 3;
-    }
+    .celebration { animation: celebrate .5s ease-in-out 3; }
 
     @keyframes celebrate {
-      0%, 100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.04);
-      }
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
     }
 
-    .footer {
-      color: #aaa;
-      font-size: 13px;
-      margin-top: 22px;
-    }
+    .footer { color: #aaa; font-size: 13px; margin-top: 22px; }
 
-    /* ===== 8. ปรับสำหรับมือถือ ===== */
     @media (max-width: 480px) {
-      body {
-        padding: 18px 12px;
-      }
-
-      .container {
-        padding: 24px 16px;
-        border-radius: 24px;
-      }
-
-      #animalDisplay {
-        min-height: 140px;
-      }
-
-      button {
-        font-size: 17px;
-      }
+      .container { padding: 22px 16px; border-radius: 24px; }
+      #animalDisplay { min-height: 140px; }
+      button { font-size: 16px; }
     }
 
-    /* รองรับผู้ใช้ที่ลดแอนิเมชันในเครื่อง */
     @media (prefers-reduced-motion: reduce) {
-      .animal-pop,
-      .celebration {
-        animation-duration: 0.01ms;
-        animation-iteration-count: 1;
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
       }
     }
   </style>
 </head>
 
 <body>
-
   <main class="container" id="mainContainer">
-
-    <h1>สุ่มสัตว์สุดน่ารัก 🐾</h1>
-
-    <p class="subtitle">
-      กดปุ่มเพื่อค้นพบเพื่อนสัตว์ตัวใหม่!
-    </p>
-
-    <div id="animalDisplay" aria-label="สัตว์ที่สุ่มได้">
-      🐰
+    <div class="language-row">
+      <label for="languageSelect" id="languageLabel">🌐 Language</label>
+      <select id="languageSelect">
+        <option value="en">🇬🇧 English</option>
+        <option value="th">🇹🇭 ไทย</option>
+        <option value="ja">🇯🇵 日本語</option>
+        <option value="zh">🇨🇳 中文</option>
+        <option value="ko">🇰🇷 한국어</option>
+        <option value="es">🇪🇸 Español</option>
+        <option value="fr">🇫🇷 Français</option>
+        <option value="de">🇩🇪 Deutsch</option>
+        <option value="pt">🇧🇷 Português</option>
+      </select>
     </div>
 
-    <p id="message" aria-live="polite">
-      พร้อมสุ่มสัตว์หรือยัง?
-    </p>
+    <h1 id="title">Animal Randomizer 🐾</h1>
+    <p class="subtitle" id="subtitle">Discover a new animal friend!</p>
 
-    <p id="counter">
-      กดแล้ว 0 / 100 ครั้ง
-    </p>
+    <div id="animalDisplay" role="img" aria-label="Random animal">🐰</div>
 
-    <div
-      class="progress-track"
-      role="progressbar"
-      aria-label="ความคืบหน้าการสุ่ม"
-      aria-valuemin="0"
-      aria-valuemax="100"
-      aria-valuenow="0"
-      id="progressTrack"
-    >
+    <p id="message" aria-live="polite">Ready to discover an animal?</p>
+    <p id="counter">Clicks: 0 / 100</p>
+
+    <div class="progress-track"
+         id="progressTrack"
+         role="progressbar"
+         aria-label="Progress"
+         aria-valuemin="0"
+         aria-valuemax="100"
+         aria-valuenow="0">
       <div id="progressBar"></div>
     </div>
 
-    <button id="animalButton" type="button">
-      🎲 สุ่มสัตว์เลย!
-    </button>
-
-    <p class="footer">
-      สุ่มให้ครบ 100 ครั้ง เพื่อปลดล็อกฝนสัตว์! 🌈
-    </p>
-
+    <button id="animalButton" type="button">🎲 Random Animal!</button>
+    <p class="footer" id="footer">Reach 100 clicks to unlock Animal Rain! 🌈</p>
   </main>
 
   <script>
-    // ===== 1. รายชื่อสัตว์ =====
+    // 1. Language translations
+    const translations = {
+      en: {
+        title: "Animal Randomizer 🐾",
+        subtitle: "Discover a new animal friend!",
+        language: "🌐 Language",
+        ready: "Ready to discover an animal?",
+        counter: "Clicks: {count} / 100",
+        progress: "Progress",
+        button: "🎲 Random Animal!",
+        footer: "Reach 100 clicks to unlock Animal Rain! 🌈",
+        found: "You found {animal} today!",
+        celebration: "🎉 100 clicks! Animal Rain is here! 🐾",
+        finished: "🌈 Animal Rain is over! Keep clicking for another round!",
+        rainButton: "🎉 Animal Rain in progress...",
+        animalLabel: "Random animal"
+      },
+      th: {
+        title: "สุ่มสัตว์สุดน่ารัก 🐾",
+        subtitle: "ค้นพบเพื่อนสัตว์ตัวใหม่!",
+        language: "🌐 ภาษา",
+        ready: "พร้อมสุ่มสัตว์หรือยัง?",
+        counter: "กดแล้ว {count} / 100 ครั้ง",
+        progress: "ความคืบหน้าการสุ่ม",
+        button: "🎲 สุ่มสัตว์เลย!",
+        footer: "สุ่มให้ครบ 100 ครั้ง เพื่อปลดล็อกฝนสัตว์! 🌈",
+        found: "วันนี้เจอ {animal} แล้ว!",
+        celebration: "🎉 ครบ 100 ครั้งแล้ว! ฝนสัตว์มาแล้ววว! 🐾",
+        finished: "🌈 ฝนสัตว์จบแล้ว! กดต่อเพื่อเริ่มรอบใหม่ได้เลย!",
+        rainButton: "🎉 ฝนสัตว์กำลังตก...",
+        animalLabel: "สัตว์ที่สุ่มได้"
+      },
+      ja: {
+        title: "どうぶつランダム 🐾",
+        subtitle: "新しい動物の友達を見つけよう！",
+        language: "🌐 言語",
+        ready: "動物を見つける準備はできた？",
+        counter: "クリック数：{count} / 100",
+        progress: "進行状況",
+        button: "🎲 動物を引く！",
+        footer: "100回クリックして動物の雨を解放しよう！🌈",
+        found: "今日は {animal} に出会ったよ！",
+        celebration: "🎉 100回達成！動物の雨だ！🐾",
+        finished: "🌈 動物の雨が終わったよ！次のラウンドへ！",
+        rainButton: "🎉 動物の雨が降っています...",
+        animalLabel: "ランダムな動物"
+      },
+      zh: {
+        title: "可爱动物随机抽选 🐾",
+        subtitle: "发现一位新的动物朋友！",
+        language: "🌐 语言",
+        ready: "准备好发现动物了吗？",
+        counter: "点击次数：{count} / 100",
+        progress: "进度",
+        button: "🎲 随机抽动物！",
+        footer: "点击满100次，解锁动物雨！🌈",
+        found: "今天发现了 {animal}！",
+        celebration: "🎉 已点击100次！动物雨来啦！🐾",
+        finished: "🌈 动物雨结束啦！继续点击开始新一轮！",
+        rainButton: "🎉 动物雨正在下...",
+        animalLabel: "随机动物"
+      },
+      ko: {
+        title: "귀여운 동물 뽑기 🐾",
+        subtitle: "새로운 동물 친구를 만나 보세요!",
+        language: "🌐 언어",
+        ready: "동물을 만날 준비가 되었나요?",
+        counter: "클릭 횟수: {count} / 100",
+        progress: "진행 상황",
+        button: "🎲 동물 뽑기!",
+        footer: "100번 클릭하고 동물 비를 만나세요! 🌈",
+        found: "오늘은 {animal}을(를) 만났어요!",
+        celebration: "🎉 100회 달성! 동물 비가 내려요! 🐾",
+        finished: "🌈 동물 비가 끝났어요! 계속 눌러 새 라운드를 시작하세요!",
+        rainButton: "🎉 동물 비가 내리는 중...",
+        animalLabel: "무작위 동물"
+      },
+      es: {
+        title: "Animales al azar 🐾",
+        subtitle: "¡Descubre un nuevo amigo animal!",
+        language: "🌐 Idioma",
+        ready: "¿Listo para descubrir un animal?",
+        counter: "Clics: {count} / 100",
+        progress: "Progreso",
+        button: "🎲 ¡Sacar un animal!",
+        footer: "¡Llega a 100 clics para desbloquear la lluvia de animales! 🌈",
+        found: "¡Hoy encontraste a {animal}!",
+        celebration: "🎉 ¡100 clics! ¡Llegó la lluvia de animales! 🐾",
+        finished: "🌈 ¡Terminó la lluvia! ¡Sigue haciendo clic para otra ronda!",
+        rainButton: "🎉 ¡Está lloviendo animales!",
+        animalLabel: "Animal aleatorio"
+      },
+      fr: {
+        title: "Animaux au hasard 🐾",
+        subtitle: "Découvre un nouvel ami animal !",
+        language: "🌐 Langue",
+        ready: "Prêt à découvrir un animal ?",
+        counter: "Clics : {count} / 100",
+        progress: "Progression",
+        button: "🎲 Tirer un animal !",
+        footer: "Atteins 100 clics pour débloquer la pluie d’animaux ! 🌈",
+        found: "Aujourd’hui, tu as trouvé {animal} !",
+        celebration: "🎉 100 clics ! La pluie d’animaux arrive ! 🐾",
+        finished: "🌈 La pluie est terminée ! Clique encore pour recommencer !",
+        rainButton: "🎉 Pluie d’animaux en cours...",
+        animalLabel: "Animal aléatoire"
+      },
+      de: {
+        title: "Zufällige Tiere 🐾",
+        subtitle: "Entdecke einen neuen tierischen Freund!",
+        language: "🌐 Sprache",
+        ready: "Bereit, ein Tier zu entdecken?",
+        counter: "Klicks: {count} / 100",
+        progress: "Fortschritt",
+        button: "🎲 Tier ziehen!",
+        footer: "Erreiche 100 Klicks, um den Tierregen freizuschalten! 🌈",
+        found: "Heute hast du {animal} entdeckt!",
+        celebration: "🎉 100 Klicks! Der Tierregen beginnt! 🐾",
+        finished: "🌈 Der Tierregen ist vorbei! Klicke weiter für eine neue Runde!",
+        rainButton: "🎉 Tierregen läuft...",
+        animalLabel: "Zufälliges Tier"
+      },
+      pt: {
+        title: "Animais Aleatórios 🐾",
+        subtitle: "Descubra um novo amigo animal!",
+        language: "🌐 Idioma",
+        ready: "Pronto para descobrir um animal?",
+        counter: "Cliques: {count} / 100",
+        progress: "Progresso",
+        button: "🎲 Sortear animal!",
+        footer: "Chegue a 100 cliques para desbloquear a chuva de animais! 🌈",
+        found: "Hoje você encontrou {animal}!",
+        celebration: "🎉 100 cliques! Começou a chuva de animais! 🐾",
+        finished: "🌈 A chuva acabou! Continue clicando para outra rodada!",
+        rainButton: "🎉 Chuva de animais em andamento...",
+        animalLabel: "Animal aleatório"
+      }
+    };
+
+    // 2. Animal list
     const animals = [
       "🐶", "🐱", "🐭", "🐹", "🐰",
       "🦊", "🐻", "🐼", "🐨", "🐯",
@@ -279,138 +374,144 @@
       "🦘", "🦥", "🦦", "🦨", "🦩"
     ];
 
-    // ===== 2. ตัวแปรของเกม =====
+    // 3. Game state
     let clickCount = 0;
     let rainRunning = false;
-    let rainTimers = [];
+    let currentLanguage = "en";
 
-    // ===== 3. เลือกสัตว์แบบสุ่ม =====
+    const $ = (id) => document.getElementById(id);
+
     function getRandomAnimal() {
-      const randomIndex = Math.floor(
-        Math.random() * animals.length
-      );
-
-      return animals[randomIndex];
+      return animals[Math.floor(Math.random() * animals.length)];
     }
 
-    // ===== 4. เมื่อกดปุ่มสุ่ม =====
-    function showRandomAnimal() {
+    // 4. Translate the interface
+    function setLanguage(language) {
+      currentLanguage = translations[language] ? language : "en";
+      const t = translations[currentLanguage];
 
-      // สุ่มสัตว์และแสดงผล
-      const selectedAnimal = getRandomAnimal();
+      document.documentElement.lang = currentLanguage;
+      document.title = t.title;
 
-      const display = document.getElementById("animalDisplay");
+      $("languageLabel").textContent = t.language;
+      $("title").textContent = t.title;
+      $("subtitle").textContent = t.subtitle;
+      $("animalDisplay").setAttribute("aria-label", t.animalLabel);
+      $("progressTrack").setAttribute("aria-label", t.progress);
+      $("footer").textContent = t.footer;
 
-      display.textContent = selectedAnimal;
-
-      // เริ่มแอนิเมชันใหม่ทุกครั้ง
-      display.classList.remove("animal-pop");
-
-      // บังคับให้เบราว์เซอร์เริ่มแอนิเมชันใหม่
-      void display.offsetWidth;
-
-      display.classList.add("animal-pop");
-
-      // เพิ่มจำนวนครั้ง
-      clickCount++;
-
-      // อัปเดตตัวนับ
       updateCounter();
 
-      // ตรวจสอบว่าครบ 100 ครั้งหรือยัง
-      if (clickCount >= 100) {
-        clickCount = 0;
-
-        updateCounter();
-
-        startAnimalRain();
-      } else if (!rainRunning) {
-        document.getElementById("message").textContent =
-          "วันนี้เจอ " + selectedAnimal + " แล้ว!";
+      if (rainRunning) {
+        $("message").textContent = t.celebration;
+        $("animalButton").textContent = t.rainButton;
+      } else if (clickCount === 0) {
+        $("message").textContent = t.ready;
+        $("animalButton").textContent = t.button;
+      } else {
+        $("message").textContent = t.found.replace(
+          "{animal}", $("animalDisplay").textContent
+        );
+        $("animalButton").textContent = t.button;
       }
     }
 
-    // ===== 5. อัปเดตตัวนับและแถบความคืบหน้า =====
     function updateCounter() {
-      document.getElementById("counter").textContent =
-        "กดแล้ว " + clickCount + " / 100 ครั้ง";
+      const t = translations[currentLanguage];
 
-      document.getElementById("progressBar").style.width =
-        clickCount + "%";
-
-      document.getElementById("progressTrack").setAttribute(
-        "aria-valuenow",
-        clickCount
-      );
+      $("counter").textContent = t.counter.replace("{count}", clickCount);
+      $("progressBar").style.width = clickCount + "%";
+      $("progressTrack").setAttribute("aria-valuenow", clickCount);
     }
 
-    // ===== 6. เริ่มฝนสัตว์ =====
+    // 5. Pick an animal
+    function showRandomAnimal() {
+      if (rainRunning) return;
+
+      const animal = getRandomAnimal();
+      const display = $("animalDisplay");
+      const t = translations[currentLanguage];
+
+      display.textContent = animal;
+      display.classList.remove("animal-pop");
+      void display.offsetWidth;
+      display.classList.add("animal-pop");
+
+      clickCount++;
+      updateCounter();
+
+      if (clickCount >= 100) {
+        clickCount = 0;
+        updateCounter();
+        startAnimalRain();
+      } else {
+        $("message").textContent = t.found.replace("{animal}", animal);
+      }
+    }
+
+    // 6. Animal rain
     function startAnimalRain() {
       rainRunning = true;
 
-      const message = document.getElementById("message");
-      const container = document.getElementById("mainContainer");
+      const t = translations[currentLanguage];
+      const container = $("mainContainer");
+      const button = $("animalButton");
 
-      message.textContent = "🎉 ครบ 100 ครั้งแล้ว! ฝนสัตว์มาแล้ววว! 🐾";
+      $("message").textContent = t.celebration;
+      button.disabled = true;
+      button.textContent = t.rainButton;
 
       container.classList.remove("celebration");
-
       void container.offsetWidth;
-
       container.classList.add("celebration");
 
-      // สร้างสัตว์ตกลงมา 120 ตัว
-      for (let i = 0; i < 120; i++) {
+      let created = 0;
+      const total = 120;
 
-        const timer = setTimeout(() => {
-          const fallingAnimal = document.createElement("div");
+      function createFallingAnimal() {
+        const fallingAnimal = document.createElement("div");
 
-          fallingAnimal.className = "rain-animal";
-          fallingAnimal.textContent = getRandomAnimal();
+        fallingAnimal.className = "rain-animal";
+        fallingAnimal.textContent = getRandomAnimal();
+        fallingAnimal.setAttribute("aria-hidden", "true");
+        fallingAnimal.style.left = Math.random() * 95 + "vw";
+        fallingAnimal.style.fontSize = (24 + Math.random() * 28) + "px";
+        fallingAnimal.style.animationDuration = (2.5 + Math.random() * 2.5) + "s";
 
-          // สุ่มตำแหน่งแนวนอน
-          fallingAnimal.style.left =
-            Math.random() * 95 + "vw";
+        fallingAnimal.addEventListener("animationend", () => {
+          fallingAnimal.remove();
+        }, { once: true });
 
-          // สุ่มขนาด
-          fallingAnimal.style.fontSize =
-            (24 + Math.random() * 28) + "px";
-
-          // สุ่มความเร็ว
-          fallingAnimal.style.animationDuration =
-            (2.5 + Math.random() * 2.5) + "s";
-
-          document.body.appendChild(fallingAnimal);
-
-          fallingAnimal.addEventListener("animationend", () => {
-            fallingAnimal.remove();
-          }, { once: true });
-
-        }, i * 40);
-
-        rainTimers.push(timer);
+        document.body.appendChild(fallingAnimal);
       }
 
-      // ปลดสถานะฝนสัตว์เมื่อสร้างสัตว์ครบ
-      const finishTimer = setTimeout(() => {
-        rainRunning = false;
-        rainTimers = [];
+      const rainInterval = setInterval(() => {
+        createFallingAnimal();
+        created++;
 
-        container.classList.remove("celebration");
+        if (created >= total) {
+          clearInterval(rainInterval);
 
-        message.textContent =
-          "🌈 ฝนสัตว์จบแล้ว! กดต่อเพื่อเริ่มรอบใหม่ได้เลย!";
-      }, 120 * 40 + 5000);
-
-      rainTimers.push(finishTimer);
+          setTimeout(() => {
+            rainRunning = false;
+            container.classList.remove("celebration");
+            button.disabled = false;
+            button.textContent = translations[currentLanguage].button;
+            $("message").textContent = translations[currentLanguage].finished;
+          }, 5000);
+        }
+      }, 40);
     }
 
-    // ===== 7. เชื่อมปุ่มกับฟังก์ชัน =====
-    document.getElementById("animalButton").addEventListener(
-      "click",
-      showRandomAnimal
-    );
-  </script>
+    // 7. Event listeners
+    $("animalButton").addEventListener("click", showRandomAnimal);
 
+    $("languageSelect").addEventListener("change", (event) => {
+      setLanguage(event.target.value);
+    });
+
+    // Start in English
+    setLanguage("en");
+  </script>
 </body>
 </html>
