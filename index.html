@@ -1,0 +1,416 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>สุ่มสัตว์สุดน่ารัก 🐾</title>
+
+  <style>
+    /* ===== 1. ตั้งค่าพื้นฐาน ===== */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 30px 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: linear-gradient(135deg, #f5f5ff, #ffe9f5);
+      overflow-x: hidden;
+    }
+
+    /* ===== 2. กล่องหลัก ===== */
+    .container {
+      width: 100%;
+      max-width: 500px;
+      padding: 30px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid white;
+      border-radius: 28px;
+      box-shadow: 0 12px 35px rgba(108, 92, 231, 0.15);
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      color: #6c5ce7;
+      font-size: clamp(25px, 6vw, 36px);
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: #888;
+      font-size: 16px;
+    }
+
+    /* ===== 3. พื้นที่แสดงสัตว์ ===== */
+    #animalDisplay {
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      font-size: clamp(90px, 25vw, 130px);
+    }
+
+    .animal-pop {
+      animation: pop 0.65s ease;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(0.2) rotate(-20deg);
+        opacity: 0;
+      }
+
+      60% {
+        transform: scale(1.2) rotate(10deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+
+    #message {
+      min-height: 30px;
+      color: #6c5ce7;
+      font-size: 20px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    /* ===== 4. ตัวนับ ===== */
+    #counter {
+      color: #777;
+      font-size: 16px;
+      margin: 18px 0 10px;
+    }
+
+    .progress-track {
+      height: 12px;
+      width: 100%;
+      background: #eeeaff;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #a29bfe, #fd79a8);
+      border-radius: 20px;
+      transition: width 0.2s ease;
+    }
+
+    /* ===== 5. ปุ่ม ===== */
+    button {
+      border: none;
+      border-radius: 15px;
+      padding: 15px 24px;
+      min-height: 50px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform 0.15s, background 0.15s;
+    }
+
+    #animalButton {
+      width: 100%;
+      color: white;
+      background: #6c5ce7;
+      box-shadow: 0 5px 0 #4834d4;
+    }
+
+    #animalButton:hover {
+      background: #8174f1;
+    }
+
+    #animalButton:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #4834d4;
+    }
+
+    /* ===== 6. ฝนสัตว์ ===== */
+    .rain-animal {
+      position: fixed;
+      top: -70px;
+      z-index: 10;
+      pointer-events: none;
+      user-select: none;
+      will-change: transform;
+      animation: animalRain linear forwards;
+    }
+
+    @keyframes animalRain {
+      0% {
+        transform: translateY(-70px) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(115vh) rotate(720deg);
+        opacity: 0.8;
+      }
+    }
+
+    /* ===== 7. เอฟเฟกต์เมื่อครบ 100 ครั้ง ===== */
+    .celebration {
+      animation: celebrate 0.5s ease-in-out 3;
+    }
+
+    @keyframes celebrate {
+      0%, 100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.04);
+      }
+    }
+
+    .footer {
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 22px;
+    }
+
+    /* ===== 8. ปรับสำหรับมือถือ ===== */
+    @media (max-width: 480px) {
+      body {
+        padding: 18px 12px;
+      }
+
+      .container {
+        padding: 24px 16px;
+        border-radius: 24px;
+      }
+
+      #animalDisplay {
+        min-height: 140px;
+      }
+
+      button {
+        font-size: 17px;
+      }
+    }
+
+    /* รองรับผู้ใช้ที่ลดแอนิเมชันในเครื่อง */
+    @media (prefers-reduced-motion: reduce) {
+      .animal-pop,
+      .celebration {
+        animation-duration: 0.01ms;
+        animation-iteration-count: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main class="container" id="mainContainer">
+
+    <h1>สุ่มสัตว์สุดน่ารัก 🐾</h1>
+
+    <p class="subtitle">
+      กดปุ่มเพื่อค้นพบเพื่อนสัตว์ตัวใหม่!
+    </p>
+
+    <div id="animalDisplay" aria-label="สัตว์ที่สุ่มได้">
+      🐰
+    </div>
+
+    <p id="message" aria-live="polite">
+      พร้อมสุ่มสัตว์หรือยัง?
+    </p>
+
+    <p id="counter">
+      กดแล้ว 0 / 100 ครั้ง
+    </p>
+
+    <div
+      class="progress-track"
+      role="progressbar"
+      aria-label="ความคืบหน้าการสุ่ม"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+      id="progressTrack"
+    >
+      <div id="progressBar"></div>
+    </div>
+
+    <button id="animalButton" type="button">
+      🎲 สุ่มสัตว์เลย!
+    </button>
+
+    <p class="footer">
+      สุ่มให้ครบ 100 ครั้ง เพื่อปลดล็อกฝนสัตว์! 🌈
+    </p>
+
+  </main>
+
+  <script>
+    // ===== 1. รายชื่อสัตว์ =====
+    const animals = [
+      "🐶", "🐱", "🐭", "🐹", "🐰",
+      "🦊", "🐻", "🐼", "🐨", "🐯",
+      "🦁", "🐮", "🐷", "🐸", "🐵",
+      "🐔", "🐧", "🐦", "🦆", "🦉",
+      "🦇", "🐺", "🐗", "🐴", "🦄",
+      "🐝", "🦋", "🐌", "🐞", "🐢",
+      "🐍", "🦎", "🦂", "🐙", "🦑",
+      "🦀", "🐠", "🐬", "🐳", "🦈",
+      "🐊", "🐘", "🦒", "🦓", "🦍",
+      "🦘", "🦥", "🦦", "🦨", "🦩"
+    ];
+
+    // ===== 2. ตัวแปรของเกม =====
+    let clickCount = 0;
+    let rainRunning = false;
+    let rainTimers = [];
+
+    // ===== 3. เลือกสัตว์แบบสุ่ม =====
+    function getRandomAnimal() {
+      const randomIndex = Math.floor(
+        Math.random() * animals.length
+      );
+
+      return animals[randomIndex];
+    }
+
+    // ===== 4. เมื่อกดปุ่มสุ่ม =====
+    function showRandomAnimal() {
+
+      // สุ่มสัตว์และแสดงผล
+      const selectedAnimal = getRandomAnimal();
+
+      const display = document.getElementById("animalDisplay");
+
+      display.textContent = selectedAnimal;
+
+      // เริ่มแอนิเมชันใหม่ทุกครั้ง
+      display.classList.remove("animal-pop");
+
+      // บังคับให้เบราว์เซอร์เริ่มแอนิเมชันใหม่
+      void display.offsetWidth;
+
+      display.classList.add("animal-pop");
+
+      // เพิ่มจำนวนครั้ง
+      clickCount++;
+
+      // อัปเดตตัวนับ
+      updateCounter();
+
+      // ตรวจสอบว่าครบ 100 ครั้งหรือยัง
+      if (clickCount >= 100) {
+        clickCount = 0;
+
+        updateCounter();
+
+        startAnimalRain();
+      } else if (!rainRunning) {
+        document.getElementById("message").textContent =
+          "วันนี้เจอ " + selectedAnimal + " แล้ว!";
+      }
+    }
+
+    // ===== 5. อัปเดตตัวนับและแถบความคืบหน้า =====
+    function updateCounter() {
+      document.getElementById("counter").textContent =
+        "กดแล้ว " + clickCount + " / 100 ครั้ง";
+
+      document.getElementById("progressBar").style.width =
+        clickCount + "%";
+
+      document.getElementById("progressTrack").setAttribute(
+        "aria-valuenow",
+        clickCount
+      );
+    }
+
+    // ===== 6. เริ่มฝนสัตว์ =====
+    function startAnimalRain() {
+      rainRunning = true;
+
+      const message = document.getElementById("message");
+      const container = document.getElementById("mainContainer");
+
+      message.textContent = "🎉 ครบ 100 ครั้งแล้ว! ฝนสัตว์มาแล้ววว! 🐾";
+
+      container.classList.remove("celebration");
+
+      void container.offsetWidth;
+
+      container.classList.add("celebration");
+
+      // สร้างสัตว์ตกลงมา 120 ตัว
+      for (let i = 0; i < 120; i++) {
+
+        const timer = setTimeout(() => {
+          const fallingAnimal = document.createElement("div");
+
+          fallingAnimal.className = "rain-animal";
+          fallingAnimal.textContent = getRandomAnimal();
+
+          // สุ่มตำแหน่งแนวนอน
+          fallingAnimal.style.left =
+            Math.random() * 95 + "vw";
+
+          // สุ่มขนาด
+          fallingAnimal.style.fontSize =
+            (24 + Math.random() * 28) + "px";
+
+          // สุ่มความเร็ว
+          fallingAnimal.style.animationDuration =
+            (2.5 + Math.random() * 2.5) + "s";
+
+          document.body.appendChild(fallingAnimal);
+
+          fallingAnimal.addEventListener("animationend", () => {
+            fallingAnimal.remove();
+          }, { once: true });
+
+        }, i * 40);
+
+        rainTimers.push(timer);
+      }
+
+      // ปลดสถานะฝนสัตว์เมื่อสร้างสัตว์ครบ
+      const finishTimer = setTimeout(() => {
+        rainRunning = false;
+        rainTimers = [];
+
+        container.classList.remove("celebration");
+
+        message.textContent =
+          "🌈 ฝนสัตว์จบแล้ว! กดต่อเพื่อเริ่มรอบใหม่ได้เลย!";
+      }, 120 * 40 + 5000);
+
+      rainTimers.push(finishTimer);
+    }
+
+    // ===== 7. เชื่อมปุ่มกับฟังก์ชัน =====
+    document.getElementById("animalButton").addEventListener(
+      "click",
+      showRandomAnimal
+    );
+  </script>
+
+</body>
+</html>
